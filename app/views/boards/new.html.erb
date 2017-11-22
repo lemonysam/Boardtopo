@@ -1,0 +1,29 @@
+<h1>New board!</h1>
+<%= form_with scope: :board, url: boards_path, local: true do |form| %>
+<% if @board.errors.any? %>
+  <div id="error_explanation">
+    <h2>
+      <%= pluralize(@board.errors.count, "error") %> prohibited
+      this article from being saved:
+    </h2>
+    <ul>
+      <% @board.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+<div class="form group">
+   <%= form.label :name %><br>
+   <%= form.text_field :name %>
+ </div>
+
+ <div class="form group">
+   <%= form.label :imageUrl %><br>
+   <%= form.text_field :imageUrl %>
+ </div>
+
+ <div class="form group">
+   <%= form.submit %>
+ </div>
+<% end %>

@@ -1,0 +1,127 @@
+<h1><%= @board.name %></h1>
+
+<div class="row">
+  <div class="col-sm-12">
+    <div id="boardApp" />
+  </div>
+</div>
+<script type="text/babel">
+let boardApp = document.getElementById('boardApp');
+const board_id = <%= @board.id %>;
+const boardHolds = (<%=raw @board.holds.to_json %>).map((hold) => {return { id: hold.id, position:{x: hold.x, y: hold.y}}});
+class Marker extends React.Component{
+  render() {
+    const markerPosition = {position: 'absolute', left: this.props.x * 100 + '%', top: this.props.y * 100+ '%'};
+    return (
+      <svg width="3%" height="3%" style={markerPosition}>
+        <circle cx="50%" cy="50%" r="45%" stroke="red" stroke-width="5" fill="none" />
+        Sorry, your browser does not support inline SVG.
+      </svg>
+    )
+  }
+};
+
+class Board extends React.Component{
+  constructor (props) {
+    super(props);
+    this.state = { markers: boardHolds };
+    this.addMarker = this.addMarker.bind(this);
+    this.clearMarkers = this.clearMarkers.bind(this);
+    this.undo = this.undo.bind(this);
+  }
+  addMarker(e) {
+    let markers = this.state.markers;
+    const newId = markers.length;
+    const imageWidth = boardApp.offsetWidth;
+    const imageHeight = boardApp.offsetHeight;
+    console.log(imageWidth);
+    console.log(imageHeight);
+
+    const x = (e.nativeEvent.offsetX - (imageWidth/100*1.5))/(imageWidth);
+    const y = (e.nativeEvent.offsetY - (imageHeight/100*1.5))/(imageHeight);
+
+    fetch('/holds/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        board_id: board_id,
+        x: x,
+        y: y
+      })
+
+    }).then((response)=>{
+      return response.json()
+    }).then((jsonResponse) => {
+      const newMarker = { id: jsonResponse.id, position:{x: jsonResponse.x, y: jsonResponse.y}};
+      markers = markers.concat(newMarker);
+      this.setState({markers: markers});
+    });
+  }
+
+  undo(e) {
+    let markers = this.state.markers;
+    const markerToDelete = markers[markers.length-1];
+    markers.pop();
+    this.setState({markers: markers});
+
+    fetch('/boards/' + board_id + '/holds/' + markerToDelete.id + '/', {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }
+    }).then(() => {
+      this.setState({markers: markers});
+
+    }
+    )
+  }
+  clearMarkers(e) {
+    const markers = this.state.markers;
+
+    fetch('/boards/' + board_id + '/', {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        board:{
+          holds: []
+        }
+      })
+    })
+
+
+    this.setState({ markers: Array(0).fill(null) });
+
+  }
+  render(){
+    const markers = this.state.markers.slice();
+    const Markers = markers.map((marker, i)=> {
+      return (<Marker key={marker.id} x={marker.position.x} y={marker.position.y} />)
+
+    });
+    return(
+        <div style={{position: 'relative'}}>
+          <img src="http://127.0.0.1:8887/images/Newcastle.jpg" onClick={this.addMarker}  width="100%"/>
+          {Markers}
+          <button>Save Holds</button>
+          <button onClick={this.undo}>Undo</button>
+          <button onClick={this.clearMarkers}>Clear Holds</button>
+        </div>
+
+    );
+  }
+
+}
+
+ReactDOM.render(
+  <Board />,
+  document.getElementById('boardApp')
+);
+
+</script>
