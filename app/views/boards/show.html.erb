@@ -13,9 +13,8 @@ class Marker extends React.Component{
   render() {
     const markerPosition = {position: 'absolute', left: this.props.x * 100 + '%', top: this.props.y * 100+ '%'};
     return (
-      <svg width="3%" height="3%" style={markerPosition}>
-        <circle cx="50%" cy="50%" r="45%" stroke="red" stroke-width="5" fill="none" />
-        Sorry, your browser does not support inline SVG.
+      <svg width="3%" height="3%" style={markerPosition} xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50%" cy="50%" r="45%" stroke="red" stroke-width="5" fill="grey" fill-opacity="0.25" opacity="0.5" />
       </svg>
     )
   }

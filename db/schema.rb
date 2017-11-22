@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171121152055) do
+ActiveRecord::Schema.define(version: 20171122170800) do
 
   create_table "boards", force: :cascade do |t|
     t.string "name"
@@ -26,6 +26,21 @@ ActiveRecord::Schema.define(version: 20171121152055) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["board_id"], name: "index_holds_on_board_id"
+  end
+
+  create_table "problemHolds", force: :cascade do |t|
+    t.integer "problem_id"
+    t.integer "hold_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["hold_id"], name: "index_problemHolds_on_hold_id"
+    t.index ["problem_id"], name: "index_problemHolds_on_problem_id"
+  end
+
+  create_table "problems", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end
