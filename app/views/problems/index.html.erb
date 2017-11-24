@@ -1,2 +1,8 @@
 <h1><%=@board.name%></h1>
-<p>Find me in app/views/board/list.html.erb</p>
+<ul>
+  <% @board.problems.each do |problem| %>
+   <li>
+     <%= link_to problem.name, [@board, problem] %>
+   </li>
+ <% end %>
+</ul>

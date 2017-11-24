@@ -1,0 +1,69 @@
+<h1><%=@problem.board.name%></h1>
+<h2><%=@problem.name%></h2>
+<div class="row">
+  <div class="col-sm-12">
+    <div id="boardApp" />
+  </div>
+</div>
+<script type="text/babel">
+let boardImage = document.getElementById('boardApp').getElementsByTagName("img")[0];
+const board_id = <%= @problem.board.id %>;
+const boardHolds = (<%=raw @holds.to_json %>).map((hold) => {return { id: hold.id, position:{x: hold.x, y: hold.y}, highlight: false}});
+class Marker extends React.Component{
+  constructor (props) {
+    super(props);
+    this.state = {highlight:this.props.highlight};
+
+  }
+
+  render() {
+    const markerPosition = {position: 'absolute', left: this.props.x * 100 + '%', top: this.props.y * 100+ '%'};
+    return (
+      <svg width="3%" height="3%" style={markerPosition} xmlns="http://www.w3.org/2000/svg" onClick={this.props.onClick}>
+        <circle cx="50%" cy="50%" r="45%" stroke='red' stroke-width="5" fill="none" fill-opacity="0.25"  />
+      </svg>
+    )
+  }
+};
+class Board extends React.Component{
+  constructor (props) {
+    super(props);
+    this.state = { holds: boardHolds };
+  }
+
+  render(){
+    const holds = this.state.holds.slice();
+    const holdMarkers = holds.map((marker, i)=> {
+      return (<Marker key={marker.id} x={marker.position.x} y={marker.position.y} highlight={marker.highlight} onClick={(e) => this.highlightHold(e, marker.id)}/>)
+    });
+    return(
+        <div className="row">
+          <div className="col-sm-9">
+            <div style={{position: 'relative'}}>
+              <img src="http://127.0.0.1:8887/images/Newcastle.jpg"  width="100%"/>
+              {holdMarkers}
+            </div>
+          </div>
+          <div className="col-sm-3">
+          </div>
+        </div>
+
+    );
+  }
+
+}
+
+ReactDOM.render(
+  <Board />,
+  document.getElementById('boardApp')
+);
+
+function getIndex(value, arr, prop) {
+    for(var i = 0; i < arr.length; i++) {
+        if(arr[i][prop] === value) {
+            return i;
+        }
+    }
+    return -1; //to handle the case where the value doesn't exist
+}
+</script>
