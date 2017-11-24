@@ -1,5 +1,5 @@
 class Problem < ApplicationRecord
-  belongs_to :Board
-  has_many :Holds, through: :problemHolds
+  belongs_to :board
+  has_and_belongs_to_many :holds
 
 end

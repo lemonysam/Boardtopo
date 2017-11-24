@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   resources :boards
   resources :boards do
     resources :holds
+    resources :problems
+
   end
   resources :holds
 

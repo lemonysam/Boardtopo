@@ -1,2 +1,0 @@
-class ProblemHold < ApplicationRecord
-end

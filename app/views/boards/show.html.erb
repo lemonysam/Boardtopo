@@ -6,7 +6,8 @@
   </div>
 </div>
 <script type="text/babel">
-let boardApp = document.getElementById('boardApp');
+
+
 const board_id = <%= @board.id %>;
 const boardHolds = (<%=raw @board.holds.to_json %>).map((hold) => {return { id: hold.id, position:{x: hold.x, y: hold.y}}});
 class Marker extends React.Component{
@@ -29,12 +30,11 @@ class Board extends React.Component{
     this.undo = this.undo.bind(this);
   }
   addMarker(e) {
+    let boardImage = document.getElementById('boardImage');
     let markers = this.state.markers;
     const newId = markers.length;
-    const imageWidth = boardApp.offsetWidth;
-    const imageHeight = boardApp.offsetHeight;
-    console.log(imageWidth);
-    console.log(imageHeight);
+    const imageWidth = boardImage.offsetWidth;
+    const imageHeight = boardImage.offsetHeight;
 
     const x = (e.nativeEvent.offsetX - (imageWidth/100*1.5))/(imageWidth);
     const y = (e.nativeEvent.offsetY - (imageHeight/100*1.5))/(imageHeight);
@@ -105,12 +105,17 @@ class Board extends React.Component{
 
     });
     return(
-        <div style={{position: 'relative'}}>
-          <img src="http://127.0.0.1:8887/images/Newcastle.jpg" onClick={this.addMarker}  width="100%"/>
-          {Markers}
-          <button>Save Holds</button>
-          <button onClick={this.undo}>Undo</button>
-          <button onClick={this.clearMarkers}>Clear Holds</button>
+        <div className="row">
+            <div className="col-sm-9">
+              <div id="boardImage"  style={{position: 'relative'}}>
+                <img src="http://127.0.0.1:8887/images/Newcastle.jpg" onClick={this.addMarker}  width="100%"/>
+                {Markers}
+              </div>
+            </div>
+            <div className="col-sm-3">
+              <button onClick={this.undo}>Undo</button>
+              <button onClick={this.clearMarkers}>Clear Holds</button>
+            </div>
         </div>
 
     );
